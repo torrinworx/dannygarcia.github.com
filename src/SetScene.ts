@@ -44,7 +44,9 @@ export const SetScene = () => {
 
   // Setup MouseBall
   let mouseGeometry = new THREE.CircleGeometry(1, 10);
-  mouseGeometry.vertices.shift(); // removes center vertex
+  if (mouseGeometry.vertices) {
+    mouseGeometry.vertices.shift(); // removes center vertex
+  }
   let mouseBall = new THREE.LineLoop(
     mouseGeometry,
     new THREE.LineBasicMaterial({
@@ -76,7 +78,7 @@ export const SetScene = () => {
   // Create an instance buffer geometry and set attributes
   var geometry = new THREE.InstancedBufferGeometry();
 
-  var ballGeometry = new THREE.IcosahedronBufferGeometry(1, 3);
+  var ballGeometry = new THREE.IcosahedronGeometry(1, 3); // Updated class name
   geometry.copy(ballGeometry);
 
   // Generate random data for each sphere

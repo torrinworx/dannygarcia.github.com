@@ -1,6 +1,9 @@
 import * as THREE from "three";
+
+import "./style.css";
 import SetScene from "./SetScene";
 import SetListeners from "./SetListeners";
+
 
 import {
   sendPhysicsUpdate,
@@ -112,16 +115,20 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.BasicShadowMap;
 renderer.toneMapping = THREE.ReinhardToneMapping;
 renderer.toneMappingExposure = 3;
-renderer.physicallyCorrectLights = true;
+renderer.useLegacyLights = true; // Updated property
 container.appendChild(renderer.domElement);
 
-(
-  (renderer.domElement.getContext("webgl") ||
-    renderer.domElement.getContext(
-      "experimental-webgl"
-    )) as WebGLRenderingContext
-).getExtension("OES_standard_derivatives");
-
+// Check if the WebGL context was successfully created
+if (renderer.domElement) {
+  (
+    (renderer.domElement.getContext("webgl") ||
+      renderer.domElement.getContext(
+        "experimental-webgl"
+      )) as WebGLRenderingContext
+  ).getExtension("OES_standard_derivatives");
+} else {
+  console.error("WebGL context could not be created");
+}
 
 // Animation loop
 const animate = () => {
@@ -176,4 +183,6 @@ export const main = () => {
   SetListeners(renderer);
 }
 
-export default main();
+document.addEventListener("DOMContentLoaded", () => {
+  main();
+});

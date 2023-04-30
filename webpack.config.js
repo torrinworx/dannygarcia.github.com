@@ -1,5 +1,7 @@
-/* Configure HTMLWebpack plugin */
+const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
 const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
     template: __dirname + '/src/index.html',
     filename: 'index.html',
@@ -8,20 +10,18 @@ const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
 
 module.exports = {
     mode: "development",
-    // devtool: "inline-source-map",
     entry: "./src/main.ts",
     output: {
-        path: __dirname,
-        filename: "main.built.js"
+        filename: '[name].bundle.js',
+        path: path.resolve(__dirname, 'dist'),
+        publicPath: '/',
     },
-    node: { fs: 'empty' },
     resolve: {
-        // Add `.ts` and `.tsx` as a resolvable extension.
+        fallback: { fs: false },
         extensions: [".ts", ".tsx", ".js"]
     },
     module: {
         rules: [
-            // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
             {
                 test: /\.tsx?$/,
                 loader: 'ts-loader',
@@ -29,19 +29,37 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                exclude: /[\/\\](node_modules|bower_components|public)[\/\\]/,
                 use: [
                     'style-loader',
                     'css-loader'
                 ]
             },
             {
-                test: /\.(glsl|vs|fs|vert|frag|worker)$/,
+                test: /\.worker\.js$/,
+                use: { loader: 'worker-loader' },
+            },
+            {
+                test: /\.(glsl|vs|fs|vert|frag)$/,
                 exclude: /node_modules/,
-                use: 'raw-loader'
-            }
+                use: 'raw-loader',
+            },
         ]
     },
-    plugins: [HTMLWebpackPluginConfig]
+    plugins: [
+        HTMLWebpackPluginConfig,
+        new CopyWebpackPlugin({
+            patterns: [
+                { from: 'favicon.ico', to: 'favicon.ico' },
+            ],
+        }),
+    ],
+    devServer: {
+        host: '0.0.0.0',
+        hot: true,
+        open: true,
+        static: {
+            directory: path.join(__dirname, 'src'),
+            watch: true,
+        },
+    },
 };
-

@@ -2,6 +2,7 @@
 
 // Import any required variables from main.ts here
 import { move, spheres } from "./main";
+import PhysicsWorker from "worker-loader!./physics.worker.js";
 
 
 // Utility function to map a value from one range to another
@@ -43,7 +44,7 @@ export const geometryData = {
 
 export const PhysicsEngine = (onMessage) => {
   // Start physics engine/worker
-  const physicsWorker = new Worker("/src/physics.worker.js");
+  const physicsWorker = new PhysicsWorker();
 
   // Event handler for receiving messages from the physics worker
   physicsWorker.onmessage = onMessage;
